@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="exporter-version" content="Evernote Mac 6.9.2 (454158)"/><meta name="altitude" content="695.958251953125"/><meta name="author" content="Sergio Majluf"/><meta name="created" content="2017-01-16 02:32:50 +0000"/><meta name="latitude" content="-33.40291709993899"/><meta name="longitude" content="-70.56049012346242"/><meta name="source" content="desktop.mac"/><meta name="updated" content="2017-01-16 05:32:36 +0000"/><title>Exploración RoboyDyn Uno+Wifi</title></head><body>
+<div><span style="font-size: 17px;"><b>Paso 0: puente usb CH340.</b></span></div>
+<div>Lo primero es tener funcionando el puente usb CH340.</div>
+<div>En mi caso, además descubrí que sólo puedo usar Arduino IDE 1.6.9</div>
+<div>Si uso la versión más reciente, no me funciona nada que no sea Genuino/Arduino de verdad.</div>
+<div><br/></div>
+<div>Una vez que estamos OK, en la lista de Puertos veremos algo así:</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/E3747A27-D52E-4DA0-9ADE-28C06DE2CE6D.png" height="236" width="594"/></div>
+<div><br/></div>
+<div>
+<div><span style="font-size: 17px;"><b>Primer Paso: ESP</b></span></div>
+<div><br/></div>
+<div>Para configurar el ESP, hay que instalar una librería:</div>
+<div><a href="https://github.com/esp8266/Arduino">https://github.com/esp8266/Arduino</a></div>
+<div><br/></div>
+<div>Probé varias alternativas, y la única que me funciona hasta ahora es la del módulo Genérico. Esto no calza con la descripción de la placa que dice que tiene 8Mb, mientras que el ESP-01 creo que tiene 1 o 2 a lo sumo. Pero funciona.<img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/A3A05960-3969-46FD-9842-DC7055870593.png" height="816" width="708"/><br/></div>
+<div><br/></div>
+<div>En el hardware, los DIP Switches:</div>
+<div>Upload: 00001110</div>
+</div>
+<div>Normal: 00001100</div>
+<div><br/></div>
+<div>En esta tabla están todas las combinaciones “válidas”:</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/switches.png" height="1334" width="750"/></div>
+<div>
+<div><br/></div>
+</div>
+<div>El código que vamos a subir al ESP es un Servidor Web.</div>
+<div>El ESP estará esperando nuevos clientes. Cuando llegue un cliente, comparará la URL con un patrón conocido, y si el patrón calza, asignará un estado a una variable var.</div>
+<div><br/></div>
+<div>Luego, responderá al cliente con un contenido html.</div>
+<div><br/></div>
+<div>El <a href="https://github.com/sergiomajluf/ESP8266-RobotDyn/blob/master/esp-webServer/esp-webServer.ino">código completo</a> está en Github.</div>
+<div><br/></div>
+<div>Para subir el código, poner los dip switches en modo upload, y presionar ambos botones Reset. Mientras presionas, darle upload al código (a la antigua usanza de Arduino), y soltarlos unos segundos después.</div>
+<div><br/></div>
+<div>
+<div>El upload se demora más que en modo Arduino normal, pero verás el avance en la consola, en letras rojas:</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/CF49D075-12CB-4D99-98F6-F130BA0484E8.png" height="1584" width="2236"/><br/></div>
+</div>
+<div><br/></div>
+<div>Para bootear el ESP en modo normal, debes cambiar el switches #7 a OFF. Esto porque el ESP debe tener el pin CHPD a tierra. Eso hace el switch 7.</div>
+<div>
+<div><br/></div>
+<div>Extrañamente, al no cambiar de vuelta el switch a veces funciona igual, pero no debería...</div>
+<div><br/></div>
+<div>Tras hacer eso, tenemos un ESP conectado a la IP 10.0.1.20 (modificar para que calce con tu RED), que recibe un request web del tipo:</div>
+<div><a href="http://10.0.1.20/gpio/0">http://10.0.1.20/gpio/0</a></div>
+<div><a href="http://10.0.1.20/gpio/1">http://10.0.1.20/gpio/1</a></div>
+<div><br/></div>
+</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/63E1AD91-D72C-4A76-9A16-2D242851FADC.png" height="1600" width="2560"/></div>
+<div><br/></div>
+<div><br/></div>
+<div>Ahora debiéramos prender un LED desde el ESP, pero eso lo haremos más adelante. Con el output de la consola ya sé qué el software está funcionando.</div>
+<div>
+<div><br/></div>
+<div><span style="font-size: 17px;"><b>Segundo Paso: Arduino</b></span></div>
+<div>Luego volví a cambiar los switches:</div>
+<div>0011000</div>
+<div><br/></div>
+</div>
+<div>Esto pone la placa en modo “Arduino” normal.</div>
+<div>Le puedes subir cualquier sketch. Voy a probar con un blink (desde los ejemplos de Arduino, sólo modificado para que imprima en la consola el estado del LED) que imprime en Serial.</div>
+<div><br/></div>
+<div>Ahora, como el UART (USB) está conectado al arduino y no al ESP, no podemos ver la respuesta serial del ESP, aunque sigue estando ahí.</div>
+<div>
+<div><br/></div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/3D7E5889-D4DA-4D35-9163-5624C34476B6.png" height="1600" width="2560"/><br/></div>
+</div>
+<div><br/></div>
+<div>Nota: este pantallazo lo tomé antes de modificar el html para darle una mejor UI</div>
+<div><br/></div>
+<div><span style="font-size: 17px;"><b>Tercer Paso: controlar el LED desde ESP</b></span></div>
+<div>
+<div>Ahora hay que identificar cuál PIN físico es el que el servidor Web está modificando. Por el código sé que es el GPIO #2. En la placa están los pines de Arduino, pero también unos pines exclusivos del ESP. Si miras la placa por atrás</div>
+</div>
+<div> vemos en la segunda fila GPIO 02, 12, 02 de nuevo. También se ve el 14 y el 16.</div>
+<div><br/></div>
+<div>El microcontrolador ESP tiene muchos GPIO, creo que 10 0 más, pero depende en qué placa va, a veces se exponen sólo unos pocos, como este caso.</div>
+<div><br/></div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/Evernote%20Snapshot%2020170116%20000919.jpg" height="2398" width="1798"/></div>
+<div><br/></div>
+<div>Volviendo al Web Server, está programado para encender y apagar el Pin 2 desde una URL</div>
+<div><br/></div>
+<div>URL para apagar:</div>
+<div>
+<div><br/></div>
+</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/Evernote%20Snapshot%2020170116%20001153_1.jpg" height="3100" width="2325"/></div>
+<div><br/></div>
+<div>URL para encender:</div>
+<div>Si notaste que cambié el cableado, fue el cable a tierra, saltándome la resistencia para que el LED brillara más en la foto no más  :)</div>
+<div><br/></div>
+<div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/Evernote%20Snapshot%2020170116%20001153.jpg" height="3015" width="2391"/><br/></div>
+</div>
+<div><br/></div>
+<div>Ojo que todo este tiempo lo que vemos en la consola serial del Arduino sigue siendo código Arduino.</div>
+<div><br/></div>
+<div>Lo que vamos a hacer es leer un pin digital del arduino, y según el estado de ese pin, hacer algo en otro pin del arduino. Por ejemplo, encender un led, o controlar un relé <span style="-evernote-sentoj-emoticon:true">😉</span></div>
+<div><br/></div>
+<div>Entonces, a cambiar el código Arduino.</div>
+<div><br/></div>
+<div><span style="font-size: 17px;"><b>Cuarto Paso: un botón virtual</b></span></div>
+<div>Sabemos que el ESP prende y apaga un PIN. Eso a fin de cuentas, es un botón.</div>
+<div>Para probar, creamos código Arduino donde un botón controla el estado de otro pin GPIO</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/7DA985A6-AF98-48C1-86DC-DAEE2A56E870.png" height="1600" width="2560"/></div>
+<div><br/></div>
+<div>Este código de Arduino simplemente lee un pin digital, y si el pin está HIGH, enciende el Led 13. Ojo que estamos usando INPUT_PULLUP en el pin que leemos (el pin botonVirtual #2) para simplificar la conexión eléctrica.</div>
+<div><br/></div>
+<div>Recuerda que para subir código al Arduino, ahora los switches deben estar en ese modo: 0011000</div>
+<div><br/></div>
+<div>Con esté código cargado en el Arduino, podemos probar. En este gif vemos que hay DOS LEDs que prenden y apagan simultáneamente:</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/on-off-led.gif" height="250" width="444"/></div>
+<div><br/></div>
+<div>El LED amarillo está conectado al ESP, y se enciende porque el GPIO02 cambia a HIGH.</div>
+<div><br/></div>
+<div>El LED azul en cambio, es el LED 13 del Arduino, y se enciende porque el software lo controla. Sólo cuando el pin 2 del Arduino está HIGH, hacemos que el pin13 lo esté.</div>
+<div><br/></div>
+<div>¿No es un despropósito hacer esa vuelta si podríamos controlar todo directamente desde el ESP? Sí.</div>
+<div><br/></div>
+<div>La gracia estará cuando hagamos que el código de Arduino sea más complejo. Por ejemplo que tenga un timer. O que lea una combinación de otros pines. O que maneje simultáneamente varios pines OUTPUT con sólo uno INPUT… etc.</div>
+<div><br/></div>
+<div><br/></div>
+<div><span style="font-size: 17px;"><b>Quinto Paso: adiós LED, hola relé</b></span></div>
+<div>Con el código OK, eliminamos todas las conexiones, y las reemplazamos por el relé. Esta placa requiere al menos 3 conexiones: tierra, 5v, y 1 pin digital por cada uno de los cuatro revés. </div>
+<div><br/></div>
+<div>En este caso, ese pin digital es el 13. Podríamos usar cualquier otro, pero el código Arduino que está cargado ya está así.</div>
+<div><br/></div>
+<div>¡¡¡Sube el volumen!!!</div>
+<div><a href="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/on-off-rele.mp4">on-off-rele.mp4</a></div>
+<div><br/></div>
+<div>Finalmente, algo que hicimos antes, pero no habíamos mostrado.</div>
+<div>La interfaz desde un móvil, se ve así:</div>
+<div><img src="Exploraci%C3%B3n%20RoboyDyn%20Uno+Wifi.resources/2017-01-16%2002.18.18.png" height="1334" width="750"/></div>
+<div><br/></div>
+</body></html>
