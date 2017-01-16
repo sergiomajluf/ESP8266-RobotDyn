@@ -5,13 +5,13 @@
 
   Debemos conocer el DHCP, nombre de red y contraseña Wifi
   antes de proceder.
-  
+
   Conociendo la IP, podremos controlar el ESP de esta forma,
   para encender y apagar sólo un pin GPIO:
   http://10.0.1.20/gpio/0 // Apaga el pin
   http://10.0.1.20/gpio/1 // Enciende el pin
 
-  
+
   Este codigo es parte del ejemplo con el que controlamos
   arduino desde una señal enviada por el ESP, que a su vez
   recibe la instrucción – request – desde un cliente web
@@ -21,9 +21,7 @@
 */
 
 #include <ESP8266WiFi.h>
-
-const char* ssid = "__";
-const char* password = "Losvikingos63211505";
+#include "password.h"
 
 
 // Configura la red con IP estática
@@ -117,8 +115,8 @@ void loop() {
   s += "' href='/gpio/1'>ON </a><a class='btn";
   s += (val) ? "" : " btn-success";
   s += "' href='/gpio/0'>OFF</a></div> </div></div></div></body></html>";
-  
-  
+
+
   // Envia la respuesta HTTP al cliente
   client.print(s);
   delay(1);
